@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Ubuntu Tests
 
 on:
   push:
@@ -9,22 +9,34 @@ jobs:
   builds:
     strategy:
       fail-fast: false
+      # ubuntu 16.04 EOL is 2026
       matrix:
         os: [ 'ubuntu:16.04', 'ubuntu:18.04', 'ubuntu:20.04', 'ubuntu:22.04' ]
+
     runs-on: ubuntu-latest
     container: ${{ matrix.os }}
+
     steps:
+    # use v3 of checkout until the weird container, nodejs, glibc issue is fixed
     - uses: actions/checkout@v3
-    - name: Install dependencies
+      with:
+        fetch-depth: 0
+
+    - name: Install Dependencies
       # Set env variable or otherwise tzdata package requires interaction
       env:
         DEBIAN_FRONTEND: noninteractive
       uses: ./.github/workflows/actions/ubuntu-build-deps
-    - name: configure
+
+    - name: Configure
       run: ./configure
-    - name: make
+
+    - name: Compile
       run: make
-    - name: make check
+
+    - name: Unit Test
       run: make check
-    - name: apps tests
-      run: cd examples && ./run_tests.sh
+
+    - name: Integration Test
+      working-directory: examples
+      run: ./run_tests.sh

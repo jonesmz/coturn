@@ -34,12 +34,12 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-project(coturn)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
+
 # TODO: Modify this when the version is released
 SET(BUILD_VERSION "4.6.3")
 
@@ -74,6 +74,8 @@ if(BUILD_VERSION_POS GREATER -1)
 endif()
 message("BUILD_VERSION:${BUILD_VERSION};${_BUILD_VERSION}")
 set(VERSION ${BUILD_VERSION})
+
+project(coturn VERSION ${BUILD_VERSION})
 
 if(NOT DEFINED CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")

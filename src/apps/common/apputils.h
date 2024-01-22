@@ -64,32 +64,12 @@ extern int IS_TURN_SERVER;
 #if defined(TURN_NO_TLS)
 
 #define TLS_SUPPORTED 0
-#define TLSv1_1_SUPPORTED 0
-#define TLSv1_2_SUPPORTED 0
 
-#else
+#else // ! defined(TURN_NO_TLS)
 
 #define TLS_SUPPORTED 1
 
-#if defined(SSL_OP_NO_TLSv1_1)
-#define TLSv1_1_SUPPORTED 1
-#else
-#define TLSv1_1_SUPPORTED 0
-#endif
-
-#if defined(SSL_OP_NO_TLSv1_2)
-#define TLSv1_2_SUPPORTED 1
-#else
-#define TLSv1_2_SUPPORTED 0
-#endif
-
-#if defined(SSL_OP_NO_TLSv1_3)
-#define TLSv1_3_SUPPORTED 1
-#else
-#define TLSv1_3_SUPPORTED 0
-#endif
-
-#endif
+#endif // defined(TURN_NO_TLS)
 
 #if defined(TURN_NO_DTLS)
 
@@ -114,14 +94,8 @@ extern int IS_TURN_SERVER;
 
 enum _TURN_TLS_TYPE {
   TURN_TLS_NO = 0,
-  TURN_TLS_SSL23,
-  TURN_TLS_v1_0,
-#if TLSv1_1_SUPPORTED
-  TURN_TLS_v1_1,
-#if TLSv1_2_SUPPORTED
   TURN_TLS_v1_2,
-#endif
-#endif
+  TURN_TLS_v1_3,
   TURN_TLS_TOTAL
 };
 

@@ -102,16 +102,17 @@ extern "C" {
 #define DEFAULT_CONFIG_FILE "turnserver.conf"
 
 #if OPENSSL_VERSION_NUMBER >= 0x30000000L
-#define DEFAULT_CIPHER_LIST OSSL_default_cipher_list()
-#if TLSv1_3_SUPPORTED
-#define DEFAULT_CIPHERSUITES OSSL_default_ciphersuites()
-#endif
-#else
-#define DEFAULT_CIPHER_LIST "DEFAULT"
-#if TLSv1_3_SUPPORTED && defined(TLS_DEFAULT_CIPHERSUITES)
-#define DEFAULT_CIPHERSUITES TLS_DEFAULT_CIPHERSUITES
-#endif
-#endif
+  #define DEFAULT_CIPHER_LIST OSSL_default_cipher_list()
+  #if TLS_SUPPORTED
+    #define DEFAULT_CIPHERSUITES OSSL_default_ciphersuites()
+  #endif
+#else // OPENSSL_VERSION_NUMBER < 0x30000000L
+  #define DEFAULT_CIPHER_LIST "DEFAULT"
+  #if TLS_SUPPORTED && defined(TLS_DEFAULT_CIPHERSUITES)
+    #define DEFAULT_CIPHERSUITES TLS_DEFAULT_CIPHERSUITES
+  #endif
+#endif // OPENSSL_VERSION_NUMBER >= 0x30000000L
+
 
 #define DEFAULT_EC_CURVE_NAME "prime256v1"
 
@@ -195,8 +196,6 @@ typedef struct _turn_params_ {
   char tls_password[513];
   char dh_file[1025];
 
-  int no_tlsv1;
-  int no_tlsv1_1;
   int no_tlsv1_2;
   int no_tls;
   int no_dtls;

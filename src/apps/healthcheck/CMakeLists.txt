@@ -31,14 +31,27 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 ##
-# Author: Kang Lin <kl222@126.com>
 
-add_subdirectory(common)
-add_subdirectory(natdiscovery)
-add_subdirectory(oauth)
-add_subdirectory(peer)
-add_subdirectory(relay)
-add_subdirectory(rfc5769)
-add_subdirectory(stunclient)
-add_subdirectory(uclient)
-add_subdirectory(healthcheck)
+project(turnutils_healthcheck)
+add_executable(${PROJECT_NAME})
+
+file(GLOB CPP_SOURCES "*.cpp")
+file(GLOB CPP_HEADERS "*.h")
+
+target_sources(${PROJECT_NAME} PRIVATE ${CPP_SOURCES})
+target_sources(${PROJECT_NAME} PRIVATE ${CPP_HEADERS})
+
+target_link_libraries(${PROJECT_NAME} PRIVATE turnclient)
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+    )
+
+INSTALL(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+        COMPONENT Runtime
+    )
+install(DIRECTORY
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>/
+        DESTINATION DESTINATION "${CMAKE_INSTALL_BINDIR}"
+        COMPONENT Runtime
+    )

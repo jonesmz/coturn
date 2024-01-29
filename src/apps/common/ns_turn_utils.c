@@ -541,7 +541,7 @@ void err(int eval, const char *format, ...) {
 }
 #endif
 
-void turn_log_func_default(char *file, int line, TURN_LOG_LEVEL level, const char *format, ...) {
+void turn_log_func_default(char const * const file, int line, TURN_LOG_LEVEL level, const char *format, ...) {
   va_list args;
   va_start(args, format);
 #if defined(TURN_LOG_FUNC_IMPL)

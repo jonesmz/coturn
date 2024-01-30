@@ -32,8 +32,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef __SESSION__
-#define __SESSION__
+#ifndef COTURN_UCLIENT_SESSION_H_3F24DB4E_3426_47FF_BC7F_4F3E1FB3094B
+#define COTURN_UCLIENT_SESSION_H_3F24DB4E_3426_47FF_BC7F_4F3E1FB3094B
 
 #include <event2/bufferevent.h>
 #include <event2/event.h>
@@ -130,4 +130,4 @@ typedef struct {
 }
 #endif
 
-#endif //__SESSION__
+#endif // COTURN_UCLIENT_SESSION_H_3F24DB4E_3426_47FF_BC7F_4F3E1FB3094B

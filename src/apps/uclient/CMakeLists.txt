@@ -1,7 +1,7 @@
 ##
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# https://opensource.org/license/bsd-3-clause
+# https://opensource.org/license/bsd-3-clause/
 #
 # Copyright (C) 2021 Kang Lin <kl222@126.com>
 #

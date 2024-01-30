@@ -32,8 +32,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef __UCLIENT_ECHO__
-#define __UCLIENT_ECHO__
+#ifndef COTURN_UCLIENT_UCLIENT_H_BE2A41BA_D261_4A88_9A40_3256EE1BB8DF
+#define COTURN_UCLIENT_UCLIENT_H_BE2A41BA_D261_4A88_9A40_3256EE1BB8DF
 
 #include "session.h"
 #include "stun_buffer.h"
@@ -117,4 +117,4 @@ SOCKET_TYPE get_socket_type(void);
 }
 #endif
 
-#endif //__UCLIENT_ECHO__
+#endif // COTURN_UCLIENT_UCLIENT_H_BE2A41BA_D261_4A88_9A40_3256EE1BB8DF

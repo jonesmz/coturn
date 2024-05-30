@@ -92,12 +92,7 @@ extern int IS_TURN_SERVER;
 
 /////////// SSL //////////////////////////
 
-enum _TURN_TLS_TYPE {
-  TURN_TLS_NO = 0,
-  TURN_TLS_v1_2,
-  TURN_TLS_v1_3,
-  TURN_TLS_TOTAL
-};
+enum _TURN_TLS_TYPE { TURN_TLS_NO = 0, TURN_TLS_v1_2, TURN_TLS_v1_3, TURN_TLS_TOTAL };
 
 typedef enum _TURN_TLS_TYPE TURN_TLS_TYPE;
 

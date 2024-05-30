@@ -12,44 +12,20 @@ jobs:
   build:
     strategy:
       fail-fast: false
-      # Even though 16.04 and 18.04 aren't yet EOL, don't bother supporting cmake on them. Too old to be worth it.
       matrix:
-        os: [ 'ubuntu:20.04', 'ubuntu:22.04' ]
+        os: [ 'ubuntu-20.04', 'ubuntu-22.04', 'ubuntu-24.04' ]
 
-    runs-on: ubuntu-latest
-    container: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
     steps:
-    # use v3 of checkout until the weird container, nodejs, glibc issue is fixed
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Install Dependencies
-      # Set env variable or otherwise tzdata package requires interaction
-      env:
-        DEBIAN_FRONTEND: noninteractive
-      run: |
-        apt update
-        apt install -y \
-            build-essential \
-            cmake \
-            ninja-build \
-            pkgconf \
-            wget \
-            libevent-dev \
-            libssl-dev \
-            libpq-dev \
-            libsqlite3-dev \
-            libhiredis-dev \
-            libmongoc-dev \
-            libmicrohttpd-dev
-
-    - name: Prometheus Support
-      run: |
-        wget https://github.com/digitalocean/prometheus-client-c/releases/download/v0.1.3/libprom-dev-0.1.3-Linux.deb
-        wget https://github.com/digitalocean/prometheus-client-c/releases/download/v0.1.3/libpromhttp-dev-0.1.3-Linux.deb
-        apt install -y ./libprom-dev-0.1.3-Linux.deb ./libpromhttp-dev-0.1.3-Linux.deb
+      uses: ./.github/workflows/actions/ubuntu-build-deps
+      with:
+        SUDO: true
 
     - name: Configure
       run: |

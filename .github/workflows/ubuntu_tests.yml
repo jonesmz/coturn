@@ -9,12 +9,10 @@ jobs:
   builds:
     strategy:
       fail-fast: false
-      # ubuntu 16.04 EOL is 2026
       matrix:
-        os: [ 'ubuntu:16.04', 'ubuntu:18.04', 'ubuntu:20.04', 'ubuntu:22.04' ]
+        os: [ 'ubuntu-20.04', 'ubuntu-22.04', 'ubuntu-24.04' ]
 
-    runs-on: ubuntu-latest
-    container: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
     steps:
     # use v3 of checkout until the weird container, nodejs, glibc issue is fixed
@@ -27,6 +25,8 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       uses: ./.github/workflows/actions/ubuntu-build-deps
+      with:
+        SUDO: true
 
     - name: Configure
       run: ./configure

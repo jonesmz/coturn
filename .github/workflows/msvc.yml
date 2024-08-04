@@ -7,38 +7,22 @@ on:
 
 jobs:
   compile:
-    name: ${{matrix.os}}-vc-${{matrix.VCPKG_PLATFORM_TOOLSET}}-${{matrix.CMAKE_GENERATOR_PLATFORM}}-${{matrix.BUILD_TYPE}}-${{matrix.BUILD_SHARED_LIBS}}
+    name: ${{matrix.os}}-vc-${{matrix.BUILD_TYPE}}-${{matrix.BUILD_SHARED_LIBS}}
 
     strategy:
       matrix:
         BUILD_TYPE: [Release, Debug]
         BUILD_SHARED_LIBS: [OFF, ON]
-        CMAKE_GENERATOR_PLATFORM: [x64, Win32]
-        os: [windows-latest]
-        include:
-          # MSVC 2022
-          - triplet: x64-windows
-            VCPKG_PLATFORM_TOOLSET: v143
-            CMAKE_GENERATOR_PLATFORM: x64
-
-          - triplet: x86-windows
-            VCPKG_PLATFORM_TOOLSET: v143
-            CMAKE_GENERATOR_PLATFORM: Win32
-
-          # MSVC 2019
-          - triplet: x86-windows
-            VCPKG_PLATFORM_TOOLSET: v142
-            CMAKE_GENERATOR_PLATFORM: Win32
+        os: [windows-2019, windows-2022]
 
     runs-on: ${{matrix.os}}
 
     env:
       SOURCE_DIR:  ${{github.workspace}}\.cache\source
       TOOLS_DIR:   ${{github.workspace}}\.cache\tools
-      INSTALL_DIR: ${{github.workspace}}\.cache\install_msvc_${{matrix.triplet}}_${{matrix.BUILD_TYPE}}
+      INSTALL_DIR: ${{github.workspace}}\.cache\install_msvc_${{matrix.BUILD_TYPE}}
       VCPKGGITCOMMITID: 53bef8994c541b6561884a8395ea35715ece75db
-      VCPKG_PLATFORM_TOOLSET: ${{matrix.VCPKG_PLATFORM_TOOLSET}}
-      CMAKE_GENERATOR_PLATFORM: ${{matrix.CMAKE_GENERATOR_PLATFORM}}
+      VCPKG_PLATFORM_TOOLSET: v143
 
     defaults:
       run:
@@ -48,6 +32,8 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+
+    - uses: seanmiddleditch/gha-setup-ninja@v5
 
     - name: make directory
       run: |
@@ -63,33 +49,35 @@ jobs:
         # for vcpkg.
         vcpkgGitCommitId: '${{ env.VCPKGGITCOMMITID }}'
 
-    - name: build coturn
+    - name: Configure
       run: |
-        cmake -E make_directory ${{github.workspace}}/build
-        cd ${{github.workspace}}/build
-        cmake ${{github.workspace}} ^
-            -A ${{matrix.CMAKE_GENERATOR_PLATFORM}} ^
-            -T ${{matrix.VCPKG_PLATFORM_TOOLSET}} ^
+        cmake ^
+            -G Ninja ^
+            -S ${{github.workspace}} ^
+            -B ${{github.workspace}}/build ^
             -DWITH_MYSQL=OFF ^
-            -DBUILD_SHARED_LIBS=${{matrix.BUILD_SHARED_LIBS}} ^
             -DCMAKE_BUILD_TYPE=${{matrix.BUILD_TYPE}} ^
+            -DBUILD_SHARED_LIBS=${{matrix.BUILD_SHARED_LIBS}} ^
             -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/build/install ^
             -DCMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake
-        cmake --build . --config ${{matrix.BUILD_TYPE}}
-        cmake --build . --config ${{matrix.BUILD_TYPE}} --target install
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{matrix.BUILD_TYPE}}
+
+    - name: Install
+      run: cmake --build ${{github.workspace}}/build --config ${{matrix.BUILD_TYPE}} --target install
 
     - name: Package
       if: ${{ matrix.BUILD_TYPE == 'Release' }}
-      working-directory: ${{github.workspace}}\build
       run: |
-        7z a coturn_windows_msvc.zip ${{github.workspace}}\build\install\*
-        cmake --build . --config ${{matrix.BUILD_TYPE}} --target package
+        7z a ${{github.workspace}}/build/coturn_windows_msvc.zip ${{github.workspace}}/build/install/*
+        cmake --build ${{github.workspace}}/build --config ${{matrix.BUILD_TYPE}} --target package
 
-    - name: Update
-      if: ${{ matrix.BUILD_TYPE == 'Release' }}
+    - name: Upload
+      if: ${{ matrix.os == 'windows-2022' }} && ${{ matrix.BUILD_TYPE == 'Release' }}
       uses: actions/upload-artifact@v4
       with:
-        name: coturn_msvc-${{matrix.VCPKG_PLATFORM_TOOLSET}}-${{matrix.CMAKE_GENERATOR_PLATFORM}}-${{matrix.BUILD_SHARED_LIBS}}
+        name: coturn_msvc-${{matrix.BUILD_SHARED_LIBS}}
         path: |
           ${{github.workspace}}\build\coturn_windows_msvc.zip
           ${{github.workspace}}\build\coturn*.exe
